@@ -1,0 +1,426 @@
+---
+swagger: "2.0"
+info:
+  description: "KATHRA Catalog Management API permetting : \n * Generate source's\
+    \ packages from templates \n * Insert catalog entry from template  \n \n * Insert\
+    \ catalog entry from file  \n\n * Insert catalog entry from source repository\
+    \  \n * Read catalog entries from catalog \n "
+  version: "1.1.0-RC-SNAPSHOT"
+  title: "Kathra Catalog Manager"
+  x-artifactName: "catalogManager"
+  x-groupId: "org.kathra"
+basePath: "/api/v1"
+paths:
+  /templates:
+    get:
+      tags:
+      - "Templating"
+      summary: "Get all templates for catalog generation"
+      operationId: "getTemplates"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "CatalogEntry wtih providerId"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Template"
+  /generateFromTemplate:
+    post:
+      tags:
+      - "Templating"
+      summary: "Generate archive from template"
+      operationId: "generateFromTemplate"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "Template"
+        description: "CatalogEntry to create from Template"
+        required: true
+        schema:
+          $ref: "#/definitions/Template"
+        x-exportParamName: "Template"
+      responses:
+        200:
+          description: "CatalogEntry wtih providerId"
+          schema:
+            type: "file"
+  /catalogEntries:
+    get:
+      tags:
+      - "Read catalog entries"
+      summary: "Get all entries in the catalog"
+      operationId: "getAllCatalogServices"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "CatalogEntry with providerId"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/CatalogEntry"
+  /catalogEntries/{providerId}:
+    get:
+      tags:
+      - "Read catalog entries"
+      summary: "Get an entry in the catalog"
+      operationId: "getCatalogEntry"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "providerId"
+        in: "path"
+        description: "CatalogEntry providerId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProviderId"
+      responses:
+        200:
+          description: "CatalogEntry with details"
+          schema:
+            $ref: "#/definitions/CatalogEntryDetailed"
+  /catalogEntries/{providerId}/versions/{version}:
+    get:
+      tags:
+      - "Read catalog entries"
+      summary: "Get an entry in the catalog for specific version"
+      operationId: "getCatalogEntryFromVersion"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "providerId"
+        in: "path"
+        description: "CatalogEntry providerId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProviderId"
+      - name: "version"
+        in: "path"
+        description: "CatalogEntry version"
+        required: true
+        type: "string"
+        x-exportParamName: "Version"
+      responses:
+        200:
+          description: "CatalogEntry with details"
+          schema:
+            $ref: "#/definitions/CatalogEntryDetailed"
+  /catalogEntries/{providerId}/versions:
+    get:
+      tags:
+      - "Read catalog entries"
+      summary: "Get all version for an entry in the catalog"
+      operationId: "getCatalogEntryVersions"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "providerId"
+        in: "path"
+        description: "CatalogEntry providerId"
+        required: true
+        type: "string"
+        x-exportParamName: "ProviderId"
+      responses:
+        200:
+          description: "All versions for CatalogEntry"
+          schema:
+            $ref: "#/definitions/CatalogEntry"
+  /catalogEntries/template:
+    post:
+      tags:
+      - "Add catalog entry"
+      summary: "Create catalog entry from template"
+      operationId: "addCatalogEntryFromTemplate"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "Template"
+        description: "CatalogEntry to create from Template"
+        required: true
+        schema:
+          $ref: "#/definitions/Template"
+        x-exportParamName: "Template"
+      responses:
+        200:
+          description: "Output type"
+          schema:
+            $ref: "#/definitions/CatalogEntry"
+  /catalogEntries/archive:
+    post:
+      tags:
+      - "Add catalog entry"
+      summary: "Create catalog entry from archive file"
+      operationId: "addCatalogEntryFromArchive"
+      consumes:
+      - "multipart/form-data"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "file"
+        in: "formData"
+        description: "The uploaded file data"
+        required: true
+        type: "file"
+        x-exportParamName: "File"
+      - name: "name"
+        in: "path"
+        description: "CatalogEntry's name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "version"
+        in: "path"
+        description: "CatalogEntry's version"
+        required: true
+        type: "string"
+        x-exportParamName: "Version"
+      responses:
+        200:
+          description: "Output type"
+          schema:
+            $ref: "#/definitions/CatalogEntry"
+  /catalogEntries/sourceRepository:
+    post:
+      tags:
+      - "Add catalog entry"
+      summary: "Create catalog entry from source repository's url"
+      operationId: "addCatalogEntryFromSourceRepositoryUrl"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "SourceRepositoryUrl"
+        in: "query"
+        description: "CatalogEntry to insert from source repository's URL"
+        required: true
+        type: "string"
+        x-exportParamName: "SourceRepositoryUrl"
+      - name: "branch"
+        in: "path"
+        description: "Source repository's branch/tag/commit"
+        required: true
+        type: "string"
+        x-exportParamName: "Branch"
+      - name: "name"
+        in: "path"
+        description: "CatalogEntry's name"
+        required: true
+        type: "string"
+        x-exportParamName: "Name"
+      - name: "version"
+        in: "path"
+        description: "CatalogEntry's version"
+        required: true
+        type: "string"
+        x-exportParamName: "Version"
+      responses:
+        200:
+          description: "Output type"
+          schema:
+            $ref: "#/definitions/CatalogEntry"
+  /runtimeEnvironments:
+    get:
+      tags:
+      - "Deploy from catalog"
+      summary: "Get all RuntimeEnvironment"
+      operationId: "getRuntimeEnvironment"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "CatalogEntry wtih providerId"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Template"
+    post:
+      tags:
+      - "Deploy from catalog"
+      summary: "Deploy RuntimeEnvironment"
+      operationId: "addRuntimeEnvironment"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "RuntimeEnvironment"
+        description: "RuntimeEnvironment to deploy"
+        required: true
+        schema:
+          $ref: "#/definitions/RuntimeEnvironment"
+        x-exportParamName: "RuntimeEnvironment"
+      responses:
+        200:
+          description: "RuntimeEnvironment deployed with success"
+definitions:
+  CatalogEntry:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        description: "Name"
+      description:
+        type: "string"
+        description: "Description"
+      version:
+        type: "string"
+        description: "Version"
+      providerId:
+        type: "string"
+        description: "Uniq identifier"
+    example:
+      providerId: "stable/postgresql"
+      name: "stable/postgresql"
+      description: "Chart for PostgreSQL, an object-relational database manag..."
+      version: "6.5.4"
+  CatalogEntryDetailed:
+    allOf:
+    - $ref: '#/definitions/CatalogEntry'
+    - type: object          
+      required:
+        - rootCause
+      properties:
+        documentation:
+          type: "string"
+          description: "Documentation of catalog entry (Markdown)"
+        arguments:
+          type: "array"
+          description: "Catalog entry arguments"
+          items:
+            $ref: "#/definitions/CatalogEntryArgument"
+    example:
+      providerId: "stable/postgresql"
+      name: "stable/postgresql"
+      description: "Chart for PostgreSQL, an object-relational database manag..."
+      version: "6.5.4"
+      documentation: "# PostgreSQL
+
+[PostgreSQL](https://www.postgresql.org/) is an object-relational database management system (ORDBMS) with an emphasis on extensibility and on standards-compliance.
+
+## TL;DR;
+
+```console
+$ helm install stable/postgresql
+```
+
+## Introduction
+
+This chart bootstraps a [PostgreSQL](https://github.com/bitnami/bitnami-docker-postgresql) deployment on a [Kubernetes](http://kubernetes.io) cluster using the [Helm](https://helm.sh) package manager.
+
+Bitnami charts can be used with [Kubeapps](https://kubeapps.com/) for deployment and management of Helm Charts in clusters. This chart has been tested to work with NGINX Ingress, cert-manager, fluentd and Prometheus on top of the [BKPR](https://kubeprod.io/).
+.. .. .
+"
+      arguments:
+      - label: "global.postgresql.postgresqlUsername"
+        description: "PostgreSQL database (overrides postgresqlDatabase)"
+        contrainst: ".*"
+        value: "nil"
+        key: "global.postgresql.postgresqlDatabase"
+      - label: "global.postgresql.postgresqlUsername"
+        description: "PostgreSQL usernmae (overrides postgresqlUsername)"
+        contrainst: ".*"
+        value: "nil"
+        key: "global.postgresql.postgresqlUsername"
+  CatalogEntryArgument:
+    type: "object"
+    properties:
+      label:
+        type: "string"
+        description: "Readable argument for catalog entry"
+      description:
+        type: "string"
+        description: "Description argument for catalog entry"
+      key:
+        type: "string"
+        description: "Argument key for catalog entry"
+      value:
+        type: "string"
+        description: "Argument value for catalog entry"
+      contrainst:
+        type: "string"
+        description: "Argument constraint for catalog entry"
+    example:
+      label: "global.postgresql.postgresqlUsername"
+      description: "PostgreSQL database (overrides postgresqlDatabase)"
+      contrainst: ".*"
+      value: "nil"
+      key: "global.postgresql.postgresqlDatabase"
+  Template:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        description: "Name"
+      arguments:
+        type: "array"
+        description: "Catalog entry arguments"
+        items:
+          $ref: "#/definitions/TemplateArgument"
+    example:
+      - name: RestApiService
+        arguments:
+        - key: CHART_NAME
+          contrainst: "[A-Za-z0-9]"
+        - key: CHART_VERSION
+          contrainst: "[0-9]+\\.[0-9]+\\.[0-9]+"
+        - key: CHART_DESCRIPTION
+          contrainst: "[A-Za-z0-9]"
+        - key: APP_VERSION
+          contrainst: "[0-9]+\\.[0-9]+\\.[0-9]+"
+        - key: IMAGE_NAME
+          value: ".+"
+        - key: IMAGE_TAG
+          value: ".+"
+        - key: REGISTRY_HOST
+          value: ".+"
+  TemplateArgument:
+    type: "object"
+    properties:
+      key:
+        type: "string"
+        description: "Argument key to generate catalog entry"
+      value:
+        type: "string"
+        description: "Argument value to generate catalog entry"
+      contrainst:
+        type: "string"
+        description: "Argument constraint"
+    example:
+      contrainst: "[A-Za-z0-9]"
+      value: "MyFirstChart"
+      key: "CHART_NAME"
+  RuntimeEnvironment:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+        description: "RuntimeEnvironment identifier"
+      name:
+        type: "string"
+        description: "RuntimeEnvironment name"
+      providerId:
+        type: "string"
+        description: "RuntimeEnvironment providerId"
+      catalogEntryInstances:
+        type: "array"
+        description: "Runtime instance"
+        items:
+          $ref: "#/definitions/CatalogEntryInstance"
+  CatalogEntryInstance:
+    type: "object"
+    properties:
+      catalogEntry:
+        $ref: "#/definitions/CatalogEntry"
+      parameters:
+        type: "array"
+        description: "Catalog entry arguments"
+        items:
+          $ref: "#/definitions/TemplateArgument"
+      status:
+        type: "string"
+        description: "RuntimeEnvironment name"
