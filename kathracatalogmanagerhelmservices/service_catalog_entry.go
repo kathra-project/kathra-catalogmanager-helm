@@ -86,11 +86,13 @@ func GetCatalogEntryImpl(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetCatalogEntryFromProviderId(providerId string, version string) (CatalogEntry, error) {
-	var helmSearch = providerId
+	var helmEntries []HelmEntry
+	var err error
 	if version != "" {
-		helmSearch = providerId + " --version=\"" + version + "\""
+		helmEntries, err = HelmSearchFromVersionInMemory(providerId, version)
+	} else {
+		helmEntries, err = HelmSearchInMemory(providerId, false)
 	}
-	var helmEntries, err = HelmSearch(helmSearch)
 	if err != nil || len(helmEntries) != 1 {
 		return CatalogEntry{}, err
 	}
@@ -151,7 +153,7 @@ func createCatalogEntryFromTemplate(template Template) (CatalogEntry, error) {
 		return CatalogEntry{}, err
 	}
 
-	var catalogRepository = getHelmCatalogRepository()
+	var catalogRepository = getKathraCatalogRepository()
 	var errPush = pushIntoChartMuseum(catalogRepository, chartDirectory)
 	if errPush != nil {
 		return CatalogEntry{}, errPush
@@ -163,7 +165,7 @@ func createCatalogEntryFromTemplate(template Template) (CatalogEntry, error) {
 		Description: template.getValueFromKey("CHART_DESCRIPTION"),
 		ProviderId:  template.getValueFromKey("CHART_NAME")}
 
-	var repoName, err2 = helmFindLocalRepository(catalogRepository)
+	var repoName, err2 = HelmFindLocalRepository(catalogRepository)
 	if err2 != nil {
 		return entry, err
 	}
@@ -178,7 +180,7 @@ func createCatalogEntryFromTemplate(template Template) (CatalogEntry, error) {
 }
 
 func getAllCatalogEntries() ([]CatalogEntry, error) {
-	var helmEntries, err = HelmSearch("")
+	var helmEntries, err = HelmSearchInMemory("", false)
 	catalogEntries := []CatalogEntry{}
 	if err != nil {
 		return catalogEntries, err
@@ -190,7 +192,7 @@ func getAllCatalogEntries() ([]CatalogEntry, error) {
 }
 
 func getAllCatalogEntryVersions(providerId string) ([]CatalogEntry, error) {
-	var helmEntries, err = HelmSearch(providerId + " -l")
+	var helmEntries, err = HelmSearchInMemory(providerId, true)
 	catalogEntries := []CatalogEntry{}
 	if err != nil {
 		return catalogEntries, err
@@ -202,7 +204,7 @@ func getAllCatalogEntryVersions(providerId string) ([]CatalogEntry, error) {
 }
 
 func convertHelmEntryToCatalogEntry(helmEntry HelmEntry) CatalogEntry {
-	return CatalogEntry{Name: helmEntry.Name, Description: helmEntry.Description, ProviderId: helmEntry.Name, Version: helmEntry.VersionChart}
+	return CatalogEntry{Name: helmEntry.Name, Description: helmEntry.Description, Repository: helmEntry.RepositoryURL, ProviderId: helmEntry.LocalName, Version: helmEntry.VersionChart}
 }
 
 func getArgumentsFromChart(catalogEntry CatalogEntry) ([]CatalogEntryArgument, error) {

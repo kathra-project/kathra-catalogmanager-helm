@@ -17,6 +17,9 @@ type CatalogEntry struct {
 	// Description
 	Description string `json:"description,omitempty"`
 
+	// Repository
+	Repository string `json:"repository,omitempty"`
+
 	// Description
 	Documentation string `json:"documentation,omitempty"`
 

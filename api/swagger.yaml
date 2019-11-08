@@ -223,47 +223,19 @@ paths:
           description: "Output type"
           schema:
             $ref: "#/definitions/CatalogEntry"
-  /runtimeEnvironments:
-    get:
-      tags:
-      - "Deploy from catalog"
-      summary: "Get all RuntimeEnvironment"
-      operationId: "getRuntimeEnvironment"
-      produces:
-      - "application/json"
-      parameters: []
-      responses:
-        200:
-          description: "CatalogEntry wtih providerId"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Template"
-    post:
-      tags:
-      - "Deploy from catalog"
-      summary: "Deploy RuntimeEnvironment"
-      operationId: "addRuntimeEnvironment"
-      produces:
-      - "application/json"
-      parameters:
-      - in: "body"
-        name: "RuntimeEnvironment"
-        description: "RuntimeEnvironment to deploy"
-        required: true
-        schema:
-          $ref: "#/definitions/RuntimeEnvironment"
-        x-exportParamName: "RuntimeEnvironment"
-      responses:
-        200:
-          description: "RuntimeEnvironment deployed with success"
 definitions:
   CatalogEntry:
     type: "object"
     properties:
+      id:
+        type: "string"
+        description: "UUID"
       name:
         type: "string"
         description: "Name"
+      repository:
+        type: "string"
+        description: "Repository"
       description:
         type: "string"
         description: "Description"
@@ -273,29 +245,18 @@ definitions:
       providerId:
         type: "string"
         description: "Uniq identifier"
-    example:
-      providerId: "stable/postgresql"
-      name: "stable/postgresql"
-      description: "Chart for PostgreSQL, an object-relational database manag..."
-      version: "6.5.4"
-  CatalogEntryDetailed:
-    allOf:
-    - $ref: '#/definitions/CatalogEntry'
-    - type: object          
-      required:
-        - rootCause
-      properties:
-        documentation:
+      documentation:
           type: "string"
           description: "Documentation of catalog entry (Markdown)"
-        arguments:
-          type: "array"
-          description: "Catalog entry arguments"
-          items:
-            $ref: "#/definitions/CatalogEntryArgument"
+      arguments:
+        type: "array"
+        description: "Catalog entry arguments"
+        items:
+          $ref: "#/definitions/CatalogEntryArgument"
     example:
       providerId: "stable/postgresql"
-      name: "stable/postgresql"
+      name: "postgresql"
+      repository: "https://kubernetes-charts.storage.googleapis.com"
       description: "Chart for PostgreSQL, an object-relational database manag..."
       version: "6.5.4"
       documentation: "# PostgreSQL
@@ -316,7 +277,7 @@ Bitnami charts can be used with [Kubeapps](https://kubeapps.com/) for deployment
 .. .. .
 "
       arguments:
-      - label: "global.postgresql.postgresqlUsername"
+      - label: "global.postgresql.postgresqlDatabase"
         description: "PostgreSQL database (overrides postgresqlDatabase)"
         contrainst: ".*"
         value: "nil"
@@ -394,33 +355,3 @@ Bitnami charts can be used with [Kubeapps](https://kubeapps.com/) for deployment
       contrainst: "[A-Za-z0-9]"
       value: "MyFirstChart"
       key: "CHART_NAME"
-  RuntimeEnvironment:
-    type: "object"
-    properties:
-      id:
-        type: "string"
-        description: "RuntimeEnvironment identifier"
-      name:
-        type: "string"
-        description: "RuntimeEnvironment name"
-      providerId:
-        type: "string"
-        description: "RuntimeEnvironment providerId"
-      catalogEntryInstances:
-        type: "array"
-        description: "Runtime instance"
-        items:
-          $ref: "#/definitions/CatalogEntryInstance"
-  CatalogEntryInstance:
-    type: "object"
-    properties:
-      catalogEntry:
-        $ref: "#/definitions/CatalogEntry"
-      parameters:
-        type: "array"
-        description: "Catalog entry arguments"
-        items:
-          $ref: "#/definitions/TemplateArgument"
-      status:
-        type: "string"
-        description: "RuntimeEnvironment name"

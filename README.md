@@ -19,3 +19,10 @@ Using helm-client, it can do :
 | `KATHRA_REPO_SECRET`          | Chart repository Credential secret       |                                |
 | `HELM_UPDATE_INTERVAL`            | Cron settings for helm update            | `* * * * *`                    |
 
+
+
+## How to run
+
+```
+go run main.go
+```

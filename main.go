@@ -19,14 +19,26 @@ import (
 )
 
 func main() {
+	log.Printf("Starting ...")
+
 	var cronSettings = os.Getenv("HELM_UPDATE_INTERVAL")
 	if cronSettings == "" {
 		cronSettings = "* * * * *"
 	}
+
+	ws.HelmInitKathraRepository()
+
+	log.Printf("Helm update ...")
+	ws.HelmUpdate()
+
+	log.Printf("Load all helm information in memory ...")
+	ws.HelmLoadAllInMemory()
+
 	cronScheduler := cron.New()
 	cronScheduler.AddFunc(cronSettings, func() {
 		log.Printf("Update Helm Chart..")
 		ws.HelmUpdate()
+		ws.HelmLoadAllInMemory()
 	})
 	cronScheduler.Start()
 

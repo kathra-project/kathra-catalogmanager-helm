@@ -11,7 +11,23 @@ import (
 	"strings"
 )
 
-func getHelmCatalogRepository() HelmCatalogRepository {
+var repositories = []HelmCatalogRepository{}
+
+func HelmInitKathraRepository() {
+	var kathraRepo = getKathraCatalogRepository()
+	if kathraRepo.Name == "" {
+		log.Println("Warn: No kathra repository configured")
+		return
+	}
+	var repoLocalName, err = HelmFindLocalRepository(kathraRepo)
+	if err != nil {
+		log.Panic("Err: Unable to configure local chart repository, check env variable KATHRA_REPO_NAME, KATHRA_REPO_URL, KATHRA_REPO_CREDENTIAL_ID, KATHRA_REPO_SECRET ")
+	} else {
+		log.Println("Info: Kathra repository configured on Helm, local-name : " + repoLocalName)
+	}
+}
+
+func getKathraCatalogRepository() HelmCatalogRepository {
 	var repoName = os.Getenv("KATHRA_REPO_NAME")
 	if repoName == "" {
 		repoName = "kathra-local"
@@ -25,7 +41,7 @@ func getHelmCatalogRepository() HelmCatalogRepository {
 
 func pushIntoChartMuseum(catalogRepository HelmCatalogRepository, chartDirectory string) error {
 
-	var localRepositoryName, err = helmFindLocalRepository(catalogRepository)
+	var localRepositoryName, err = HelmFindLocalRepository(catalogRepository)
 	if err != nil {
 		return err
 	}
@@ -69,18 +85,23 @@ func HelmUpdate() error {
 }
 
 type HelmEntry struct {
-	Name         string
-	VersionChart string
-	VersionApp   string
-	Description  string
+	Name          string
+	LocalName     string
+	VersionChart  string
+	VersionApp    string
+	Description   string
+	RepositoryURL string
 }
+
+var entriesCached = []HelmEntry{}
+var entriesAllVersionsCached = []HelmEntry{}
 
 var chartDownloadCacheDirectory = os.TempDir() + "/kathra-catalogmanager-helm/cacheChart"
 
-func HelmSearch(chartName string) ([]HelmEntry, error) {
+func helmSearch(searchOpt string) ([]HelmEntry, error) {
 
 	entries := []HelmEntry{}
-	cmd := exec.Command("/bin/bash", "-c", "helm search "+chartName+" | tail -n +2")
+	cmd := exec.Command("/bin/bash", "-c", "helm search "+searchOpt+" | tail -n +2")
 	stdout, _ := cmd.StdoutPipe()
 	scanner := bufio.NewScanner(stdout)
 
@@ -88,12 +109,107 @@ func HelmSearch(chartName string) ([]HelmEntry, error) {
 	for scanner.Scan() {
 		ucl := scanner.Text()
 		var lineSplitted = strings.Split(ucl, "\t")
-		var entry = HelmEntry{Name: strings.TrimSpace(lineSplitted[0]), VersionApp: strings.TrimSpace(lineSplitted[2]), VersionChart: strings.TrimSpace(lineSplitted[1]), Description: strings.TrimSpace(lineSplitted[3])}
+		if strings.TrimSpace(lineSplitted[0]) == "" {
+			continue
+		}
+		var nameSplited = strings.Split(strings.TrimSpace(lineSplitted[0]), "/")
+		if len(nameSplited) == 1 {
+			log.Println("warn: unable to parse line : " + ucl)
+		}
+		var entry = HelmEntry{Name: nameSplited[1], LocalName: strings.TrimSpace(lineSplitted[0]), VersionApp: strings.TrimSpace(lineSplitted[2]), VersionChart: strings.TrimSpace(lineSplitted[1]), Description: strings.TrimSpace(lineSplitted[3])}
+		entry.RepositoryURL = helmFindHelmRepositoryFromChartName(entry.LocalName).Url
 		entries = append(entries, entry)
 	}
 	cmd.Wait()
 
 	return entries, nil
+}
+
+func helmFindHelmRepositoryFromChartName(chartName string) HelmCatalogRepository {
+	var lineSplitted = strings.Split(chartName, "/")
+	var localRepoIdentifier = lineSplitted[0]
+
+	for i := range repositories {
+		if localRepoIdentifier == repositories[i].Name {
+			return repositories[i]
+		}
+	}
+	return HelmCatalogRepository{}
+}
+
+func HelmRepoList() ([]HelmCatalogRepository, error) {
+
+	repositories := []HelmCatalogRepository{}
+	cmd := exec.Command("/bin/bash", "-c", "helm repo list | tail -n +2")
+	stdout, _ := cmd.StdoutPipe()
+	scanner := bufio.NewScanner(stdout)
+
+	cmd.Start()
+	for scanner.Scan() {
+		ucl := scanner.Text()
+		var lineSplitted = strings.Split(ucl, "\t")
+		var repo = HelmCatalogRepository{Name: strings.TrimSpace(lineSplitted[0]), Url: strings.TrimSpace(lineSplitted[1])}
+		repositories = append(repositories, repo)
+	}
+	cmd.Wait()
+
+	return repositories, nil
+}
+
+func HelmSearchInMemory(localName string, allversion bool) ([]HelmEntry, error) {
+	var allEntries []HelmEntry
+	if allversion {
+		allEntries = append(entriesAllVersionsCached)
+	} else {
+		allEntries = append(entriesCached)
+	}
+	log.Println("localName: " + localName)
+	if localName != "" {
+		var entriesFiltered = []HelmEntry{}
+		for i := range allEntries {
+			if allEntries[i].LocalName == localName {
+				entriesFiltered = append(entriesFiltered, allEntries[i])
+			}
+		}
+		return entriesFiltered, nil
+	}
+	return allEntries, nil
+}
+
+func HelmSearchFromVersionInMemory(localName string, version string) ([]HelmEntry, error) {
+	var entriesFiltered = []HelmEntry{}
+	var allEntries = append(entriesAllVersionsCached)
+	log.Println("localName: " + localName)
+	for i := range allEntries {
+		if allEntries[i].LocalName == localName && allEntries[i].VersionChart == version {
+			entriesFiltered = append(entriesFiltered, allEntries[i])
+		}
+	}
+	return entriesFiltered, nil
+}
+
+func HelmLoadAllInMemory() {
+
+	var repoList, err3 = HelmRepoList()
+	if err3 != nil {
+		log.Println(err3)
+	} else {
+		repositories = repoList
+	}
+
+	var found, err = helmSearch("")
+	if err != nil {
+		log.Println(err)
+	} else {
+		entriesCached = found
+	}
+	var foundAllVersion, err2 = helmSearch("-l")
+	if err2 != nil {
+		log.Println(err2)
+	} else {
+		entriesAllVersionsCached = foundAllVersion
+	}
+
 }
 
 func helmUSearchIfChartExist(repositoryName string, chartName string, chartVersion string) (bool, error) {
@@ -124,7 +240,7 @@ func helmPush(chartDirectory string, repositoryName string) error {
 	return nil
 }
 
-func helmFindLocalRepository(catalogRepository HelmCatalogRepository) (string, error) {
+func HelmFindLocalRepository(catalogRepository HelmCatalogRepository) (string, error) {
 	cmd := exec.Command("/bin/bash", "-c", "helm repo list  | awk '{if ($2 == \""+catalogRepository.Url+"\") {print $1;}}'")
 	var out bytes.Buffer
 	var stdErr bytes.Buffer
@@ -139,17 +255,27 @@ func helmFindLocalRepository(catalogRepository HelmCatalogRepository) (string, e
 	var repoName = out.String()
 	if repoName == "" {
 		println("Unable to find repository with url : " + catalogRepository.Url + ", add new repository ")
-		cmdAddRepo := exec.Command("/bin/bash", "-c", "helm repo add "+catalogRepository.Name+" --username="+catalogRepository.Username+" --password="+catalogRepository.Password+" "+catalogRepository.Url+"")
-		errAddRepo := cmdAddRepo.Run()
-		cmdAddRepo.Stderr = &stdErr
+		var errAddRepo = HelmAddRepository(catalogRepository)
 		if errAddRepo != nil {
-			println("Err: " + stdErr.String())
 			log.Println(errAddRepo)
-			return "", err
+			return "", errAddRepo
 		}
 		repoName = catalogRepository.Name
 	}
 	return repoName, nil
+}
+
+func HelmAddRepository(catalogRepository HelmCatalogRepository) error {
+	cmdAddRepo := exec.Command("/bin/bash", "-c", "helm repo add "+catalogRepository.Name+" --username="+catalogRepository.Username+" --password="+catalogRepository.Password+" "+catalogRepository.Url+"")
+	errAddRepo := cmdAddRepo.Run()
+	var stdErr bytes.Buffer
+	cmdAddRepo.Stderr = &stdErr
+	if errAddRepo != nil {
+		println("Err: " + stdErr.String())
+		log.Println(errAddRepo)
+		return errAddRepo
+	}
+	return nil
 }
 
 func helmDownloadChart(chartName string, chartVersion string) (string, error) {
@@ -183,11 +309,11 @@ func exists(path string) bool {
 	_, err := os.Stat(path)
 	if err == nil {
 		return true
-	}
-	if os.IsNotExist(err) {
+	} else if os.IsNotExist(err) {
 		return false
+	} else {
+		return true
 	}
-	return true
 }
 
 func helmGetFileFromChart(chartName string, chartVersion string, filePath string) (string, error) {
