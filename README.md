@@ -13,10 +13,7 @@ Using helm-client, it can do :
 
 | Env var                         | Description                          | Default                                   |
 | --------------------------------- | ------------------------------------ | ----------------------------------------- |
-| `KATHRA_REPO_NAME`            | Chart repository name for Helm           | `kathra-local`                 |
-| `KATHRA_REPO_URL`             | Chart repository URL                     |                                |
-| `KATHRA_REPO_CREDENTIAL_ID`   | Chart repository Credential ID           |                                |
-| `KATHRA_REPO_SECRET`          | Chart repository Credential secret       |                                |
+| `REPOSITORIES_CONFIG`            | File repositories settings          | `repositories.yaml`                 |
 | `HELM_UPDATE_INTERVAL`            | Cron settings for helm update            | `* * * * *`                    |
 
 
