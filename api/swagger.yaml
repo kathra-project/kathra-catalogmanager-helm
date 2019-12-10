@@ -4,7 +4,7 @@ info:
     packages from templates \n * Insert catalog entry from template  \n \n * Insert
     catalog entry from file  \n\n * Insert catalog entry from source repository  \n
     * Read catalog entries from catalog \n "
-  version: 1.0.0
+  version: 1.1.0-SNAPSHOT
   title: Kathra Catalog Manager
   x-artifactName: catalogManager
   x-groupId: org.kathra
