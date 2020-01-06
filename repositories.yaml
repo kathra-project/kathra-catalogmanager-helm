@@ -3,6 +3,6 @@
 - name: appscode
   url: https://charts.appscode.com/stable/
 #- name: kathra
-#  url: https://harbor.<example>/chartrepo 
-#  username: <login>
-#  password: <password>
+#  url: https://harbor.kathra.xxx/chartrepo 
+#  username: xxx
+#  password: xx
