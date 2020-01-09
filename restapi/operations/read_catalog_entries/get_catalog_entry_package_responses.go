@@ -10,7 +10,7 @@ import (
 
 	"github.com/go-openapi/runtime"
 
-	CatalogEntryPackageVersion "github.com/kathra-project/kathra-core-model-go"
+	CatalogEntryPackage "github.com/kathra-project/kathra-core-model-go/models"
 )
 
 // GetCatalogEntryPackageOKCode is the HTTP code returned for type GetCatalogEntryPackageOK
@@ -25,7 +25,7 @@ type GetCatalogEntryPackageOK struct {
 	/*
 	  In: Body
 	*/
-	Payload CatalogEntryPackageVersion.CatalogEntryPackageVersion `json:"body,omitempty"`
+	Payload CatalogEntryPackage.CatalogEntryPackage `json:"body,omitempty"`
 }
 
 // NewGetCatalogEntryPackageOK creates GetCatalogEntryPackageOK with default headers values
@@ -35,13 +35,13 @@ func NewGetCatalogEntryPackageOK() *GetCatalogEntryPackageOK {
 }
 
 // WithPayload adds the payload to the get catalog entry package o k response
-func (o *GetCatalogEntryPackageOK) WithPayload(payload CatalogEntryPackageVersion.CatalogEntryPackageVersion) *GetCatalogEntryPackageOK {
+func (o *GetCatalogEntryPackageOK) WithPayload(payload CatalogEntryPackage.CatalogEntryPackage) *GetCatalogEntryPackageOK {
 	o.Payload = payload
 	return o
 }
 
 // SetPayload sets the payload to the get catalog entry package o k response
-func (o *GetCatalogEntryPackageOK) SetPayload(payload CatalogEntryPackageVersion.CatalogEntryPackageVersion) {
+func (o *GetCatalogEntryPackageOK) SetPayload(payload CatalogEntryPackage.CatalogEntryPackage) {
 	o.Payload = payload
 }
 
@@ -49,6 +49,90 @@ func (o *GetCatalogEntryPackageOK) SetPayload(payload CatalogEntryPackageVersion
 func (o *GetCatalogEntryPackageOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
 	rw.WriteHeader(200)
+	payload := o.Payload
+	if err := producer.Produce(rw, payload); err != nil {
+		panic(err) // let the recovery middleware deal with this
+	}
+}
+
+// GetCatalogEntryPackageNotFoundCode is the HTTP code returned for type GetCatalogEntryPackageNotFound
+const GetCatalogEntryPackageNotFoundCode int = 404
+
+/*GetCatalogEntryPackageNotFound CatalogEntryPackage not found
+
+swagger:response getCatalogEntryPackageNotFound
+*/
+type GetCatalogEntryPackageNotFound struct {
+
+	/*
+	  In: Body
+	*/
+	Payload string `json:"body,omitempty"`
+}
+
+// NewGetCatalogEntryPackageNotFound creates GetCatalogEntryPackageNotFound with default headers values
+func NewGetCatalogEntryPackageNotFound() *GetCatalogEntryPackageNotFound {
+
+	return &GetCatalogEntryPackageNotFound{}
+}
+
+// WithPayload adds the payload to the get catalog entry package not found response
+func (o *GetCatalogEntryPackageNotFound) WithPayload(payload string) *GetCatalogEntryPackageNotFound {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the get catalog entry package not found response
+func (o *GetCatalogEntryPackageNotFound) SetPayload(payload string) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *GetCatalogEntryPackageNotFound) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(404)
+	payload := o.Payload
+	if err := producer.Produce(rw, payload); err != nil {
+		panic(err) // let the recovery middleware deal with this
+	}
+}
+
+// GetCatalogEntryPackageInternalServerErrorCode is the HTTP code returned for type GetCatalogEntryPackageInternalServerError
+const GetCatalogEntryPackageInternalServerErrorCode int = 500
+
+/*GetCatalogEntryPackageInternalServerError Internal error
+
+swagger:response getCatalogEntryPackageInternalServerError
+*/
+type GetCatalogEntryPackageInternalServerError struct {
+
+	/*
+	  In: Body
+	*/
+	Payload string `json:"body,omitempty"`
+}
+
+// NewGetCatalogEntryPackageInternalServerError creates GetCatalogEntryPackageInternalServerError with default headers values
+func NewGetCatalogEntryPackageInternalServerError() *GetCatalogEntryPackageInternalServerError {
+
+	return &GetCatalogEntryPackageInternalServerError{}
+}
+
+// WithPayload adds the payload to the get catalog entry package internal server error response
+func (o *GetCatalogEntryPackageInternalServerError) WithPayload(payload string) *GetCatalogEntryPackageInternalServerError {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the get catalog entry package internal server error response
+func (o *GetCatalogEntryPackageInternalServerError) SetPayload(payload string) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *GetCatalogEntryPackageInternalServerError) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(500)
 	payload := o.Payload
 	if err := producer.Produce(rw, payload); err != nil {
 		panic(err) // let the recovery middleware deal with this

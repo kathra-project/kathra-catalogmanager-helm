@@ -11,15 +11,15 @@ import (
 	golangswaggerpaths "path"
 )
 
-// GetAllCatalogServicesURL generates an URL for the get all catalog services operation
-type GetAllCatalogServicesURL struct {
+// GetAllCatalogEntryPackagesURL generates an URL for the get all catalog entry packages operation
+type GetAllCatalogEntryPackagesURL struct {
 	_basePath string
 }
 
 // WithBasePath sets the base path for this url builder, only required when it's different from the
 // base path specified in the swagger spec.
 // When the value of the base path is an empty string
-func (o *GetAllCatalogServicesURL) WithBasePath(bp string) *GetAllCatalogServicesURL {
+func (o *GetAllCatalogEntryPackagesURL) WithBasePath(bp string) *GetAllCatalogEntryPackagesURL {
 	o.SetBasePath(bp)
 	return o
 }
@@ -27,12 +27,12 @@ func (o *GetAllCatalogServicesURL) WithBasePath(bp string) *GetAllCatalogService
 // SetBasePath sets the base path for this url builder, only required when it's different from the
 // base path specified in the swagger spec.
 // When the value of the base path is an empty string
-func (o *GetAllCatalogServicesURL) SetBasePath(bp string) {
+func (o *GetAllCatalogEntryPackagesURL) SetBasePath(bp string) {
 	o._basePath = bp
 }
 
 // Build a url path and query string
-func (o *GetAllCatalogServicesURL) Build() (*url.URL, error) {
+func (o *GetAllCatalogEntryPackagesURL) Build() (*url.URL, error) {
 	var _result url.URL
 
 	var _path = "/catalogEntries"
@@ -47,7 +47,7 @@ func (o *GetAllCatalogServicesURL) Build() (*url.URL, error) {
 }
 
 // Must is a helper function to panic when the url builder returns an error
-func (o *GetAllCatalogServicesURL) Must(u *url.URL, err error) *url.URL {
+func (o *GetAllCatalogEntryPackagesURL) Must(u *url.URL, err error) *url.URL {
 	if err != nil {
 		panic(err)
 	}
@@ -58,17 +58,17 @@ func (o *GetAllCatalogServicesURL) Must(u *url.URL, err error) *url.URL {
 }
 
 // String returns the string representation of the path with query string
-func (o *GetAllCatalogServicesURL) String() string {
+func (o *GetAllCatalogEntryPackagesURL) String() string {
 	return o.Must(o.Build()).String()
 }
 
 // BuildFull builds a full url with scheme, host, path and query string
-func (o *GetAllCatalogServicesURL) BuildFull(scheme, host string) (*url.URL, error) {
+func (o *GetAllCatalogEntryPackagesURL) BuildFull(scheme, host string) (*url.URL, error) {
 	if scheme == "" {
-		return nil, errors.New("scheme is required for a full url on GetAllCatalogServicesURL")
+		return nil, errors.New("scheme is required for a full url on GetAllCatalogEntryPackagesURL")
 	}
 	if host == "" {
-		return nil, errors.New("host is required for a full url on GetAllCatalogServicesURL")
+		return nil, errors.New("host is required for a full url on GetAllCatalogEntryPackagesURL")
 	}
 
 	base, err := o.Build()
@@ -82,6 +82,6 @@ func (o *GetAllCatalogServicesURL) BuildFull(scheme, host string) (*url.URL, err
 }
 
 // StringFull returns the string representation of a complete url
-func (o *GetAllCatalogServicesURL) StringFull(scheme, host string) string {
+func (o *GetAllCatalogEntryPackagesURL) StringFull(scheme, host string) string {
 	return o.Must(o.BuildFull(scheme, host)).String()
 }

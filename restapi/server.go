@@ -25,7 +25,7 @@ import (
 	flags "github.com/jessevdk/go-flags"
 	"golang.org/x/net/netutil"
 
-	"gitlab.com/kathra-project/kathra-catalogmanager-helm/restapi/operations"
+	"github.com/kathra-project/kathra-catalogmanager-helm/restapi/operations"
 )
 
 const (

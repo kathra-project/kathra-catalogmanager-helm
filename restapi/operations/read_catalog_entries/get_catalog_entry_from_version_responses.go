@@ -10,7 +10,7 @@ import (
 
 	"github.com/go-openapi/runtime"
 
-	CatalogEntryPackageVersion "github.com/kathra-project/kathra-core-model-go"
+	CatalogEntryPackageVersion "github.com/kathra-project/kathra-core-model-go/models"
 )
 
 // GetCatalogEntryFromVersionOKCode is the HTTP code returned for type GetCatalogEntryFromVersionOK
@@ -49,6 +49,90 @@ func (o *GetCatalogEntryFromVersionOK) SetPayload(payload CatalogEntryPackageVer
 func (o *GetCatalogEntryFromVersionOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
 	rw.WriteHeader(200)
+	payload := o.Payload
+	if err := producer.Produce(rw, payload); err != nil {
+		panic(err) // let the recovery middleware deal with this
+	}
+}
+
+// GetCatalogEntryFromVersionNotFoundCode is the HTTP code returned for type GetCatalogEntryFromVersionNotFound
+const GetCatalogEntryFromVersionNotFoundCode int = 404
+
+/*GetCatalogEntryFromVersionNotFound CatalogEntryVersion not found
+
+swagger:response getCatalogEntryFromVersionNotFound
+*/
+type GetCatalogEntryFromVersionNotFound struct {
+
+	/*
+	  In: Body
+	*/
+	Payload string `json:"body,omitempty"`
+}
+
+// NewGetCatalogEntryFromVersionNotFound creates GetCatalogEntryFromVersionNotFound with default headers values
+func NewGetCatalogEntryFromVersionNotFound() *GetCatalogEntryFromVersionNotFound {
+
+	return &GetCatalogEntryFromVersionNotFound{}
+}
+
+// WithPayload adds the payload to the get catalog entry from version not found response
+func (o *GetCatalogEntryFromVersionNotFound) WithPayload(payload string) *GetCatalogEntryFromVersionNotFound {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the get catalog entry from version not found response
+func (o *GetCatalogEntryFromVersionNotFound) SetPayload(payload string) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *GetCatalogEntryFromVersionNotFound) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(404)
+	payload := o.Payload
+	if err := producer.Produce(rw, payload); err != nil {
+		panic(err) // let the recovery middleware deal with this
+	}
+}
+
+// GetCatalogEntryFromVersionInternalServerErrorCode is the HTTP code returned for type GetCatalogEntryFromVersionInternalServerError
+const GetCatalogEntryFromVersionInternalServerErrorCode int = 500
+
+/*GetCatalogEntryFromVersionInternalServerError Internal error
+
+swagger:response getCatalogEntryFromVersionInternalServerError
+*/
+type GetCatalogEntryFromVersionInternalServerError struct {
+
+	/*
+	  In: Body
+	*/
+	Payload string `json:"body,omitempty"`
+}
+
+// NewGetCatalogEntryFromVersionInternalServerError creates GetCatalogEntryFromVersionInternalServerError with default headers values
+func NewGetCatalogEntryFromVersionInternalServerError() *GetCatalogEntryFromVersionInternalServerError {
+
+	return &GetCatalogEntryFromVersionInternalServerError{}
+}
+
+// WithPayload adds the payload to the get catalog entry from version internal server error response
+func (o *GetCatalogEntryFromVersionInternalServerError) WithPayload(payload string) *GetCatalogEntryFromVersionInternalServerError {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the get catalog entry from version internal server error response
+func (o *GetCatalogEntryFromVersionInternalServerError) SetPayload(payload string) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *GetCatalogEntryFromVersionInternalServerError) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(500)
 	payload := o.Payload
 	if err := producer.Produce(rw, payload); err != nil {
 		panic(err) // let the recovery middleware deal with this

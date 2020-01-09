@@ -10,8 +10,8 @@ import (
 	runtime "github.com/go-openapi/runtime"
 	middleware "github.com/go-openapi/runtime/middleware"
 
-	"gitlab.com/kathra-project/kathra-catalogmanager-helm/restapi/operations"
-	"gitlab.com/kathra-project/kathra-catalogmanager-helm/restapi/operations/read_catalog_entries"
+	"github.com/kathra-project/kathra-catalogmanager-helm/restapi/operations"
+	"github.com/kathra-project/kathra-catalogmanager-helm/restapi/operations/read_catalog_entries"
 )
 
 //go:generate swagger generate server --target ../../kathra-catalogmanager-helm --name KathraCatalogmanagerHelm --spec ../../specifications/Services/catalogmanager/swagger.yaml
@@ -34,9 +34,9 @@ func configureAPI(api *operations.KathraCatalogmanagerHelmAPI) http.Handler {
 
 	api.JSONProducer = runtime.JSONProducer()
 
-	if api.ReadCatalogEntriesGetAllCatalogServicesHandler == nil {
-		api.ReadCatalogEntriesGetAllCatalogServicesHandler = read_catalog_entries.GetAllCatalogServicesHandlerFunc(func(params read_catalog_entries.GetAllCatalogServicesParams) middleware.Responder {
-			return middleware.NotImplemented("operation read_catalog_entries.GetAllCatalogServices has not yet been implemented")
+	if api.ReadCatalogEntriesGetAllCatalogEntryPackagesHandler == nil {
+		api.ReadCatalogEntriesGetAllCatalogEntryPackagesHandler = read_catalog_entries.GetAllCatalogEntryPackagesHandlerFunc(func(params read_catalog_entries.GetAllCatalogEntryPackagesParams) middleware.Responder {
+			return middleware.NotImplemented("operation read_catalog_entries.GetAllCatalogEntryPackages has not yet been implemented")
 		})
 	}
 	if api.ReadCatalogEntriesGetCatalogEntryFromVersionHandler == nil {

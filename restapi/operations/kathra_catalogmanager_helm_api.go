@@ -19,7 +19,7 @@ import (
 	strfmt "github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
 
-	"gitlab.com/kathra-project/kathra-catalogmanager-helm/restapi/operations/read_catalog_entries"
+	"github.com/kathra-project/kathra-catalogmanager-helm/restapi/operations/read_catalog_entries"
 )
 
 // NewKathraCatalogmanagerHelmAPI creates a new KathraCatalogmanagerHelm instance
@@ -39,8 +39,8 @@ func NewKathraCatalogmanagerHelmAPI(spec *loads.Document) *KathraCatalogmanagerH
 		BearerAuthenticator: security.BearerAuth,
 		JSONConsumer:        runtime.JSONConsumer(),
 		JSONProducer:        runtime.JSONProducer(),
-		ReadCatalogEntriesGetAllCatalogServicesHandler: read_catalog_entries.GetAllCatalogServicesHandlerFunc(func(params read_catalog_entries.GetAllCatalogServicesParams) middleware.Responder {
-			return middleware.NotImplemented("operation ReadCatalogEntriesGetAllCatalogServices has not yet been implemented")
+		ReadCatalogEntriesGetAllCatalogEntryPackagesHandler: read_catalog_entries.GetAllCatalogEntryPackagesHandlerFunc(func(params read_catalog_entries.GetAllCatalogEntryPackagesParams) middleware.Responder {
+			return middleware.NotImplemented("operation ReadCatalogEntriesGetAllCatalogEntryPackages has not yet been implemented")
 		}),
 		ReadCatalogEntriesGetCatalogEntryFromVersionHandler: read_catalog_entries.GetCatalogEntryFromVersionHandlerFunc(func(params read_catalog_entries.GetCatalogEntryFromVersionParams) middleware.Responder {
 			return middleware.NotImplemented("operation ReadCatalogEntriesGetCatalogEntryFromVersion has not yet been implemented")
@@ -90,8 +90,8 @@ type KathraCatalogmanagerHelmAPI struct {
 	// JSONProducer registers a producer for a "application/json" mime type
 	JSONProducer runtime.Producer
 
-	// ReadCatalogEntriesGetAllCatalogServicesHandler sets the operation handler for the get all catalog services operation
-	ReadCatalogEntriesGetAllCatalogServicesHandler read_catalog_entries.GetAllCatalogServicesHandler
+	// ReadCatalogEntriesGetAllCatalogEntryPackagesHandler sets the operation handler for the get all catalog entry packages operation
+	ReadCatalogEntriesGetAllCatalogEntryPackagesHandler read_catalog_entries.GetAllCatalogEntryPackagesHandler
 	// ReadCatalogEntriesGetCatalogEntryFromVersionHandler sets the operation handler for the get catalog entry from version operation
 	ReadCatalogEntriesGetCatalogEntryFromVersionHandler read_catalog_entries.GetCatalogEntryFromVersionHandler
 	// ReadCatalogEntriesGetCatalogEntryPackageHandler sets the operation handler for the get catalog entry package operation
@@ -161,8 +161,8 @@ func (o *KathraCatalogmanagerHelmAPI) Validate() error {
 		unregistered = append(unregistered, "JSONProducer")
 	}
 
-	if o.ReadCatalogEntriesGetAllCatalogServicesHandler == nil {
-		unregistered = append(unregistered, "read_catalog_entries.GetAllCatalogServicesHandler")
+	if o.ReadCatalogEntriesGetAllCatalogEntryPackagesHandler == nil {
+		unregistered = append(unregistered, "read_catalog_entries.GetAllCatalogEntryPackagesHandler")
 	}
 
 	if o.ReadCatalogEntriesGetCatalogEntryFromVersionHandler == nil {
@@ -278,7 +278,7 @@ func (o *KathraCatalogmanagerHelmAPI) initHandlerCache() {
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
-	o.handlers["GET"]["/catalogEntries"] = read_catalog_entries.NewGetAllCatalogServices(o.context, o.ReadCatalogEntriesGetAllCatalogServicesHandler)
+	o.handlers["GET"]["/catalogEntries"] = read_catalog_entries.NewGetAllCatalogEntryPackages(o.context, o.ReadCatalogEntriesGetAllCatalogEntryPackagesHandler)
 
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)

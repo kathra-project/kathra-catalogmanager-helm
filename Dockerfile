@@ -8,7 +8,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
 FROM alpine/helm:3.0.0
 RUN apk --no-cache add ca-certificates bash sed grep gawk
 WORKDIR /root/
-COPY api/swagger.yaml ./api/swagger.yaml
+#COPY api/swagger.yaml ./api/swagger.yaml
 COPY repositories.yaml repositories.yaml
 COPY --from=builder /app/main .
 EXPOSE 8080

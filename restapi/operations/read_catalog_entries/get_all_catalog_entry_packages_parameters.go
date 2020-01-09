@@ -12,18 +12,18 @@ import (
 	"github.com/go-openapi/runtime/middleware"
 )
 
-// NewGetAllCatalogServicesParams creates a new GetAllCatalogServicesParams object
+// NewGetAllCatalogEntryPackagesParams creates a new GetAllCatalogEntryPackagesParams object
 // no default values defined in spec.
-func NewGetAllCatalogServicesParams() GetAllCatalogServicesParams {
+func NewGetAllCatalogEntryPackagesParams() GetAllCatalogEntryPackagesParams {
 
-	return GetAllCatalogServicesParams{}
+	return GetAllCatalogEntryPackagesParams{}
 }
 
-// GetAllCatalogServicesParams contains all the bound params for the get all catalog services operation
+// GetAllCatalogEntryPackagesParams contains all the bound params for the get all catalog entry packages operation
 // typically these are obtained from a http.Request
 //
-// swagger:parameters getAllCatalogServices
-type GetAllCatalogServicesParams struct {
+// swagger:parameters getAllCatalogEntryPackages
+type GetAllCatalogEntryPackagesParams struct {
 
 	// HTTP Request Object
 	HTTPRequest *http.Request `json:"-"`
@@ -32,8 +32,8 @@ type GetAllCatalogServicesParams struct {
 // BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
 // for simple values it will use straight method calls.
 //
-// To ensure default values, the struct must have been initialized with NewGetAllCatalogServicesParams() beforehand.
-func (o *GetAllCatalogServicesParams) BindRequest(r *http.Request, route *middleware.MatchedRoute) error {
+// To ensure default values, the struct must have been initialized with NewGetAllCatalogEntryPackagesParams() beforehand.
+func (o *GetAllCatalogEntryPackagesParams) BindRequest(r *http.Request, route *middleware.MatchedRoute) error {
 	var res []error
 
 	o.HTTPRequest = r

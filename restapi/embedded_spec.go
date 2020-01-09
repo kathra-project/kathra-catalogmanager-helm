@@ -37,7 +37,7 @@ func init() {
           "Read catalog entries"
         ],
         "summary": "Get all entries in the catalog",
-        "operationId": "getAllCatalogServices",
+        "operationId": "getAllCatalogEntryPackages",
         "responses": {
           "200": {
             "description": "CatalogEntryPackage with providerId",
@@ -46,6 +46,12 @@ func init() {
               "items": {
                 "$ref": "#/definitions/CatalogEntryPackage"
               }
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "schema": {
+              "type": "string"
             }
           }
         }
@@ -77,6 +83,18 @@ func init() {
             "schema": {
               "$ref": "#/definitions/CatalogEntryPackage"
             }
+          },
+          "404": {
+            "description": "CatalogEntryPackage not found",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "schema": {
+              "type": "string"
+            }
           }
         }
       }
@@ -105,7 +123,22 @@ func init() {
           "200": {
             "description": "All versions for CatalogEntryPackage",
             "schema": {
-              "$ref": "#/definitions/CatalogEntryPackageVersion"
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/CatalogEntryPackageVersion"
+              }
+            }
+          },
+          "404": {
+            "description": "CatalogEntryPackage not found",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "schema": {
+              "type": "string"
             }
           }
         }
@@ -145,6 +178,18 @@ func init() {
             "schema": {
               "$ref": "#/definitions/CatalogEntryPackageVersion"
             }
+          },
+          "404": {
+            "description": "CatalogEntryVersion not found",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "schema": {
+              "type": "string"
+            }
           }
         }
       }
@@ -156,10 +201,10 @@ func init() {
       "x-artifactId": "kathra-core-model",
       "x-go-type": {
         "import": {
-          "alias": "CatalogEntryPackageVersion",
-          "package": "github.com/kathra-project/kathra-core-model-go"
+          "alias": "CatalogEntryPackage",
+          "package": "github.com/kathra-project/kathra-core-model-go/models"
         },
-        "type": "CatalogEntryPackageVersion"
+        "type": "CatalogEntryPackage"
       }
     },
     "CatalogEntryPackageVersion": {
@@ -168,7 +213,7 @@ func init() {
       "x-go-type": {
         "import": {
           "alias": "CatalogEntryPackageVersion",
-          "package": "github.com/kathra-project/kathra-core-model-go"
+          "package": "github.com/kathra-project/kathra-core-model-go/models"
         },
         "type": "CatalogEntryPackageVersion"
       }
@@ -203,7 +248,7 @@ func init() {
           "Read catalog entries"
         ],
         "summary": "Get all entries in the catalog",
-        "operationId": "getAllCatalogServices",
+        "operationId": "getAllCatalogEntryPackages",
         "responses": {
           "200": {
             "description": "CatalogEntryPackage with providerId",
@@ -212,6 +257,12 @@ func init() {
               "items": {
                 "$ref": "#/definitions/CatalogEntryPackage"
               }
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "schema": {
+              "type": "string"
             }
           }
         }
@@ -243,6 +294,18 @@ func init() {
             "schema": {
               "$ref": "#/definitions/CatalogEntryPackage"
             }
+          },
+          "404": {
+            "description": "CatalogEntryPackage not found",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "schema": {
+              "type": "string"
+            }
           }
         }
       }
@@ -271,7 +334,22 @@ func init() {
           "200": {
             "description": "All versions for CatalogEntryPackage",
             "schema": {
-              "$ref": "#/definitions/CatalogEntryPackageVersion"
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/CatalogEntryPackageVersion"
+              }
+            }
+          },
+          "404": {
+            "description": "CatalogEntryPackage not found",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "schema": {
+              "type": "string"
             }
           }
         }
@@ -311,6 +389,18 @@ func init() {
             "schema": {
               "$ref": "#/definitions/CatalogEntryPackageVersion"
             }
+          },
+          "404": {
+            "description": "CatalogEntryVersion not found",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "schema": {
+              "type": "string"
+            }
           }
         }
       }
@@ -322,10 +412,10 @@ func init() {
       "x-artifactId": "kathra-core-model",
       "x-go-type": {
         "import": {
-          "alias": "CatalogEntryPackageVersion",
-          "package": "github.com/kathra-project/kathra-core-model-go"
+          "alias": "CatalogEntryPackage",
+          "package": "github.com/kathra-project/kathra-core-model-go/models"
         },
-        "type": "CatalogEntryPackageVersion"
+        "type": "CatalogEntryPackage"
       }
     },
     "CatalogEntryPackageVersion": {
@@ -334,7 +424,7 @@ func init() {
       "x-go-type": {
         "import": {
           "alias": "CatalogEntryPackageVersion",
-          "package": "github.com/kathra-project/kathra-core-model-go"
+          "package": "github.com/kathra-project/kathra-core-model-go/models"
         },
         "type": "CatalogEntryPackageVersion"
       }
