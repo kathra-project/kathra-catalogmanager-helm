@@ -16,6 +16,7 @@ require (
 	github.com/gorilla/mux v1.7.3
 	github.com/jessevdk/go-flags v1.4.0
 	github.com/kathra-project/kathra-core-model-go v0.0.0-20200107210545-65f779f68f0e
+	github.com/kathra-project/kathra-resourcemanager-client-go v0.0.0-20200111223248-1f0144496ffa
 	github.com/robfig/cron v1.2.0
 	github.com/robfig/cron/v3 v3.0.1 // indirect
 	gitlab.com/kathra/kathra/kathra-services/kathra-runtimemanager/kathra-runtimemanager-go/kathra-runtimemanager-k8s v0.0.0-20191127170228-a50a8e8548de

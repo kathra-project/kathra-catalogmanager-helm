@@ -14,6 +14,13 @@ Using helm-client, it can do :
 | Env var                         | Description                          | Default                                   |
 | --------------------------------- | ------------------------------------ | ----------------------------------------- |
 | `REPOSITORIES_CONFIG`            | File repositories settings          | `repositories.yaml`                 |
+| `RESOURCE_MANAGER_URL`            | Resource Manager URL          | |
+| `KEYCLOAK_AUTH_URL`            | Keycloak Auth Url          | |
+| `KEYCLOAK_REALM`            | Keycloak Realm          | |
+| `USERNAME`            | Keycloak's username for technical user          | |
+| `PASSWORD`            | Keycloak's password for technical user          | |
+| `KEYCLOAK_CLIENT_ID`            | Keycloak client ID          | |
+| `KEYCLOAK_CLIENT_SECRET`            | Keycloak client Secret          | |
 | `HELM_UPDATE_INTERVAL`            | Cron settings for helm update            | `* * * * *`                    |
 
 
@@ -21,5 +28,5 @@ Using helm-client, it can do :
 ## How to run
 
 ```
-go run main.go
+go run cmd/kathra-catalogmanager-helm-server/main.go
 ```

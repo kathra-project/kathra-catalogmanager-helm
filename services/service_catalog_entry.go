@@ -33,7 +33,7 @@ func GetCatalogEntryPackageVersionFromProviderId(providerId string, version stri
 	}
 	catalogEntryPackageVersion.Arguments = args
 
-	var readmePath, readmeErr = helmGetFileFromChart(catalogEntryPackageVersion.CatalogEntryPackage.ProviderID, catalogEntryPackageVersion.Version, "README.md")
+	var readmePath, readmeErr = GetHelmServiceInstance().helmGetFileFromChart(catalogEntryPackageVersion.CatalogEntryPackage.ProviderID, catalogEntryPackageVersion.Version, "README.md")
 	if readmeErr != nil {
 		fmt.Printf("error: %v \n", readmeErr)
 	}
@@ -117,14 +117,14 @@ func GetAllCatalogEntryPackageVersionVersions(providerId string) ([]apiModel.Cat
 }
 
 func getArgumentsFromChart(catalogEntryPackageVersion *apiModel.CatalogEntryPackageVersion) ([]*apiModel.CatalogEntryArgument, error) {
-	var questionFile, err = helmGetFileFromChart(catalogEntryPackageVersion.CatalogEntryPackage.ProviderID, catalogEntryPackageVersion.Version, "questions.yml")
+	var questionFile, err = GetHelmServiceInstance().helmGetFileFromChart(catalogEntryPackageVersion.CatalogEntryPackage.ProviderID, catalogEntryPackageVersion.Version, "questions.yml")
 	if err != nil {
 		return nil, err
 	}
 	if questionFile != "" {
 		return convertQuestionFileYamlToCatalogEntryPackageVersionArgumentArray(questionFile)
 	}
-	var readmeFile, err2 = helmGetFileFromChart(catalogEntryPackageVersion.CatalogEntryPackage.ProviderID, catalogEntryPackageVersion.Version, "README.md")
+	var readmeFile, err2 = GetHelmServiceInstance().helmGetFileFromChart(catalogEntryPackageVersion.CatalogEntryPackage.ProviderID, catalogEntryPackageVersion.Version, "README.md")
 	if err2 != nil {
 		return nil, err2
 	}

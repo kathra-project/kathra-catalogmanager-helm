@@ -69,26 +69,27 @@ func registerHandlers(api *operations.KathraCatalogmanagerHelmAPI) {
 }
 
 func schedule() {
+
+	var helmSvc = svc.GetHelmServiceInstance()
+	helmSvc.UpdateFromResourceManager()
 	var cronSettings = os.Getenv("HELM_UPDATE_INTERVAL")
 	if cronSettings == "" {
 		cronSettings = "1 * * * * *"
 	}
 
-	svc.HelmInitKathraRepository()
-
 	log.Printf("Helm update ...")
-	svc.HelmUpdate()
+	helmSvc.HelmUpdate()
 
 	log.Printf("Load all helm information in memory ...")
-	svc.HelmLoadAllInMemory()
+	helmSvc.HelmLoadAllInMemory()
 
 	cronScheduler := cron.New()
 	cronScheduler.AddFunc(cronSettings, func() {
 		log.Printf("Update Helm Chart.. begin")
-		svc.HelmUpdate()
-		svc.HelmLoadAllInMemory()
+		helmSvc.UpdateFromResourceManager()
+		helmSvc.HelmUpdate()
+		helmSvc.HelmLoadAllInMemory()
 		log.Printf("Update Helm Chart.. done")
 	})
 	cronScheduler.Start()
-
 }
