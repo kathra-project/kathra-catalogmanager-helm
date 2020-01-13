@@ -188,6 +188,7 @@ type HelmEntry struct {
 	VersionApp    string
 	Description   string
 	RepositoryURL string
+	Icon          string
 }
 type HelmCatalogRepository struct {
 	Name     string `json:"name,omitempty"`
@@ -196,15 +197,15 @@ type HelmCatalogRepository struct {
 	Password string `json:"password,omitempty"`
 }
 
-var entriesCached = []HelmEntry{}
-var entriesAllVersionsCached = []HelmEntry{}
-var helmBinary = "helm3"
+var entriesCached = []*HelmEntry{}
+var entriesAllVersionsCached = []*HelmEntry{}
+var helmBinary = "helm"
 
 var chartDownloadCacheDirectory = os.TempDir() + "/kathra-catalogmanager-helm/cacheChart"
 
-func (svc *HelmService) helmSearch(searchOpt string) ([]HelmEntry, error) {
+func (svc *HelmService) helmSearch(searchOpt string) ([]*HelmEntry, error) {
 
-	entries := []HelmEntry{}
+	entries := []*HelmEntry{}
 	cmd := exec.Command("/bin/bash", "-c", helmBinary+" search repo "+searchOpt+" | tail -n +2")
 	stdout, _ := cmd.StdoutPipe()
 	scanner := bufio.NewScanner(stdout)
@@ -222,7 +223,7 @@ func (svc *HelmService) helmSearch(searchOpt string) ([]HelmEntry, error) {
 		}
 		var entry = HelmEntry{Name: nameSplited[1], LocalName: strings.TrimSpace(lineSplitted[0]), VersionApp: strings.TrimSpace(lineSplitted[2]), VersionChart: strings.TrimSpace(lineSplitted[1]), Description: strings.TrimSpace(lineSplitted[3])}
 		entry.RepositoryURL = svc.helmFindHelmRepositoryFromChartName(entry.LocalName).Url
-		entries = append(entries, entry)
+		entries = append(entries, &entry)
 	}
 	cmd.Wait()
 
@@ -260,8 +261,8 @@ func HelmRepoList() ([]*HelmCatalogRepository, error) {
 	return repositories, nil
 }
 
-func HelmSearchInMemory(localName string, allversion bool) ([]HelmEntry, error) {
-	var allEntries []HelmEntry
+func HelmSearchInMemory(localName string, allversion bool) ([]*HelmEntry, error) {
+	var allEntries []*HelmEntry
 	if allversion {
 		allEntries = append(entriesAllVersionsCached)
 	} else {
@@ -269,7 +270,7 @@ func HelmSearchInMemory(localName string, allversion bool) ([]HelmEntry, error) 
 	}
 	log.Println("localName: " + localName)
 	if localName != "" {
-		var entriesFiltered = []HelmEntry{}
+		var entriesFiltered = []*HelmEntry{}
 		for i := range allEntries {
 			if allEntries[i].LocalName == localName {
 				entriesFiltered = append(entriesFiltered, allEntries[i])
@@ -280,8 +281,8 @@ func HelmSearchInMemory(localName string, allversion bool) ([]HelmEntry, error) 
 	return allEntries, nil
 }
 
-func HelmSearchFromVersionInMemory(localName string, version string) ([]HelmEntry, error) {
-	var entriesFiltered = []HelmEntry{}
+func HelmSearchFromVersionInMemory(localName string, version string) ([]*HelmEntry, error) {
+	var entriesFiltered = []*HelmEntry{}
 	var allEntries = append(entriesAllVersionsCached)
 	log.Println("localName: " + localName)
 	for i := range allEntries {
@@ -306,6 +307,11 @@ func (svc *HelmService) HelmLoadAllInMemory() {
 		log.Println(err)
 	} else {
 		entriesCached = found
+		go func() {
+			for index := range entriesCached {
+				entriesCached[index].Icon, _ = getIconFromChart(entriesCached[index].LocalName, entriesCached[index].VersionChart)
+			}
+		}()
 	}
 	var foundAllVersion, err2 = svc.helmSearch("-l")
 	if err2 != nil {

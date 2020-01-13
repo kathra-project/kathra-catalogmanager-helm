@@ -32,7 +32,9 @@ func GetAllCatalogEntry() api.GetCatalogEntryPackageHandler {
 			for i, _ := range versions {
 				versionsAsPointer = append(versionsAsPointer, &versions[i])
 			}
-			return api.NewGetCatalogEntryPackageOK().WithPayload(models.CatalogEntryPackage{Versions: versionsAsPointer})
+			var catalogEntryPackageWithVersions = models.CatalogEntryPackage{Versions: versionsAsPointer}
+			catalogEntryPackageWithVersions.ProviderID = params.ProviderID
+			return api.NewGetCatalogEntryPackageOK().WithPayload(catalogEntryPackageWithVersions)
 		}
 	})
 }

@@ -10,6 +10,8 @@ RUN apk --no-cache add ca-certificates bash sed grep gawk
 WORKDIR /root/
 COPY repositories.yaml repositories.yaml
 COPY --from=builder /app/main .
+ENV PORT=8080
+ENV HOST=0.0.0.0
 EXPOSE 8080
 ENTRYPOINT [ "/bin/sh" ]
 CMD ["-c", "./main"] 

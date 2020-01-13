@@ -16,7 +16,7 @@ import (
 )
 
 func GetCatalogEntryPackageVersionFromProviderId(providerId string, version string) (*apiModel.CatalogEntryPackageVersion, error) {
-	var helmEntries []HelmEntry
+	var helmEntries []*HelmEntry
 	var err error
 	if version != "" {
 		helmEntries, err = HelmSearchFromVersionInMemory(providerId, version)
@@ -116,6 +116,29 @@ func GetAllCatalogEntryPackageVersionVersions(providerId string) ([]apiModel.Cat
 	return catalogEntries, nil
 }
 
+type ChartYaml struct {
+	Icon string `yaml:"icon"`
+}
+
+func getIconFromChart(providerId string, version string) (string, error) {
+	var yamlFilePath, err = GetHelmServiceInstance().helmGetFileFromChart(providerId, version, "Chart.yaml")
+	if err != nil {
+		return "", err
+	}
+	yamlFile, err := ioutil.ReadFile(yamlFilePath)
+	if err != nil {
+		log.Printf("Unable to read Chart.yaml for %v : %v", providerId, err)
+		return "", nil
+	}
+	var chartYaml ChartYaml
+	err = yaml.Unmarshal(yamlFile, &chartYaml)
+	if err != nil {
+		log.Printf("Unmarshal Chart.yaml for %v : %v", providerId, err)
+		return "", nil
+	}
+	return chartYaml.Icon, nil
+}
+
 func getArgumentsFromChart(catalogEntryPackageVersion *apiModel.CatalogEntryPackageVersion) ([]*apiModel.CatalogEntryArgument, error) {
 	var questionFile, err = GetHelmServiceInstance().helmGetFileFromChart(catalogEntryPackageVersion.CatalogEntryPackage.ProviderID, catalogEntryPackageVersion.Version, "questions.yml")
 	if err != nil {
@@ -134,20 +157,22 @@ func getArgumentsFromChart(catalogEntryPackageVersion *apiModel.CatalogEntryPack
 	return []*apiModel.CatalogEntryArgument{}, nil
 }
 
-func convertHelmEntryToCatalogEntryPackage(helmEntry HelmEntry) *apiModel.CatalogEntryPackage {
+func convertHelmEntryToCatalogEntryPackage(helmEntry *HelmEntry) *apiModel.CatalogEntryPackage {
 	var catalogEntry = apiModel.CatalogEntry{}
 	catalogEntry.Resource.Name = helmEntry.Name
 	catalogEntry.Description = helmEntry.Description
+	catalogEntry.Icon = helmEntry.Icon
 	versions := []*apiModel.CatalogEntryPackageVersion{}
 	versions = append(versions, &apiModel.CatalogEntryPackageVersion{Version: helmEntry.VersionChart})
-	return &apiModel.CatalogEntryPackage{CatalogEntry: &catalogEntry, URL: helmEntry.RepositoryURL, ProviderID: helmEntry.LocalName, Versions: versions}
+	return &apiModel.CatalogEntryPackage{CatalogEntry: &catalogEntry, URL: helmEntry.RepositoryURL, ProviderID: helmEntry.LocalName, Versions: versions, PackageType: apiModel.PACKAGETYPEHELM}
 }
 
-func convertHelmEntryToCatalogEntryPackageVersion(helmEntry HelmEntry) *apiModel.CatalogEntryPackageVersion {
+func convertHelmEntryToCatalogEntryPackageVersion(helmEntry *HelmEntry) *apiModel.CatalogEntryPackageVersion {
 	var catalogEntry = apiModel.CatalogEntry{}
 	catalogEntry.Resource.Name = helmEntry.Name
 	catalogEntry.Description = helmEntry.Description
-	var catalogEntryPackage = apiModel.CatalogEntryPackage{CatalogEntry: &catalogEntry, URL: helmEntry.RepositoryURL, ProviderID: helmEntry.LocalName}
+	catalogEntry.Icon = helmEntry.Icon
+	var catalogEntryPackage = apiModel.CatalogEntryPackage{CatalogEntry: &catalogEntry, URL: helmEntry.RepositoryURL, ProviderID: helmEntry.LocalName, PackageType: apiModel.PACKAGETYPEHELM}
 	return &apiModel.CatalogEntryPackageVersion{Version: helmEntry.VersionChart, CatalogEntryPackage: &catalogEntryPackage}
 }
 
