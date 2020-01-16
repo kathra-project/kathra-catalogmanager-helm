@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"fmt"
-
+    "github.com/go-openapi/runtime"
 	middleware "github.com/go-openapi/runtime/middleware"
 	api "github.com/kathra-project/kathra-catalogmanager-helm/restapi/operations/read_catalog_entries"
 	svc "github.com/kathra-project/kathra-catalogmanager-helm/services"

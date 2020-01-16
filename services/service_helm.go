@@ -307,11 +307,6 @@ func (svc *HelmService) HelmLoadAllInMemory() {
 		log.Println(err)
 	} else {
 		entriesCached = found
-		go func() {
-			for index := range entriesCached {
-				entriesCached[index].Icon, _ = getIconFromChart(entriesCached[index].LocalName, entriesCached[index].VersionChart)
-			}
-		}()
 	}
 	var foundAllVersion, err2 = svc.helmSearch("-l")
 	if err2 != nil {
@@ -320,6 +315,10 @@ func (svc *HelmService) HelmLoadAllInMemory() {
 		entriesAllVersionsCached = foundAllVersion
 	}
 
+	// load icons url
+	for index := range entriesCached {
+		entriesCached[index].Icon, _ = svc.getIconFromChart(entriesCached[index].LocalName, entriesCached[index].VersionChart)
+	}
 }
 
 func (svc *HelmService) helmUSearchIfChartExist(repositoryName string, chartName string, chartVersion string) (bool, error) {
@@ -441,7 +440,7 @@ func (svc *HelmService) helmGetFileFromChart(chartName string, chartVersion stri
 		return "", err
 	}
 
-	cmdFindFile := exec.Command("/bin/bash", "-c", "cd "+directoryChart+" && find . -name \""+filePath+"\" | head -n 1 ")
+	var cmdFindFile = exec.Command("/bin/bash", "-c", "cd "+directoryChart+" && find . -name \""+filePath+"\" | head -n 1 ")
 	var out bytes.Buffer
 	cmdFindFile.Stdout = &out
 	if err := cmdFindFile.Run(); err != nil {

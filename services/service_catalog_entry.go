@@ -125,12 +125,12 @@ func getIconFromChart(providerId string, version string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	yamlFile, err := ioutil.ReadFile(yamlFilePath)
-	if err != nil {
-		log.Printf("Unable to read Chart.yaml for %v : %v", providerId, err)
+	var yamlFile, err2 = ioutil.ReadFile(yamlFilePath)
+	if err2 != nil {
+		log.Printf("Unable to read Chart.yaml for %v : %v", providerId, err2)
 		return "", nil
 	}
-	var chartYaml ChartYaml
+	var chartYaml = ChartYaml{}
 	err = yaml.Unmarshal(yamlFile, &chartYaml)
 	if err != nil {
 		log.Printf("Unmarshal Chart.yaml for %v : %v", providerId, err)
