@@ -188,7 +188,7 @@ type HelmEntry struct {
 	VersionApp    string
 	Description   string
 	RepositoryURL string
-	Icon          string
+	ChartYaml     *ChartYaml
 }
 type HelmCatalogRepository struct {
 	Name     string `json:"name,omitempty"`
@@ -316,8 +316,11 @@ func (svc *HelmService) HelmLoadAllInMemory() {
 	}
 
 	// load icons url
-	for index := range entriesCached {
-		entriesCached[index].Icon, _ = svc.getIconFromChart(entriesCached[index].LocalName, entriesCached[index].VersionChart)
+	for _, element := range entriesCached {
+		var chartYaml, _ = ChartYamlFromChart(element.LocalName, element.VersionChart)
+		if chartYaml != nil {
+			element.ChartYaml = chartYaml
+		}
 	}
 }
 
@@ -401,7 +404,7 @@ func (svc *HelmService) helmDownloadChart(chartName string, chartVersion string)
 		os.MkdirAll(chartDownloadCacheDirectory, os.ModePerm)
 	}
 
-	hasher := md5.New()
+	var hasher = md5.New()
 	hasher.Write([]byte(chartName + chartVersion))
 	var directoryChart = chartDownloadCacheDirectory + "/" + hex.EncodeToString(hasher.Sum(nil))
 
@@ -440,7 +443,7 @@ func (svc *HelmService) helmGetFileFromChart(chartName string, chartVersion stri
 		return "", err
 	}
 
-	var cmdFindFile = exec.Command("/bin/bash", "-c", "cd "+directoryChart+" && find . -name \""+filePath+"\" | head -n 1 ")
+	var cmdFindFile = exec.Command("/bin/bash", "-c", "cd "+directoryChart+" && find . -name \""+filePath+"\" | sort | head -n 1 ")
 	var out bytes.Buffer
 	cmdFindFile.Stdout = &out
 	if err := cmdFindFile.Run(); err != nil {

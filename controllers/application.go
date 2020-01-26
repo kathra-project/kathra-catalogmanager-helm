@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"fmt"
-    "github.com/go-openapi/runtime"
 	middleware "github.com/go-openapi/runtime/middleware"
 	api "github.com/kathra-project/kathra-catalogmanager-helm/restapi/operations/read_catalog_entries"
 	svc "github.com/kathra-project/kathra-catalogmanager-helm/services"
@@ -16,7 +15,11 @@ func GetAllCatalogEntries() api.GetAllCatalogEntryPackagesHandlerFunc {
 			fmt.Println(err)
 			return api.NewGetAllCatalogEntryPackagesInternalServerError().WithPayload("Get CatalogEntries generates internal error")
 		} else {
-			return api.NewGetAllCatalogEntryPackagesOK().WithPayload(entries)
+			var entriesAsValues []models.CatalogEntryPackage
+			for _, item := range entries {
+				entriesAsValues = append(entriesAsValues, *item)
+			}
+			return api.NewGetAllCatalogEntryPackagesOK().WithPayload(entriesAsValues)
 		}
 	})
 }
@@ -30,7 +33,7 @@ func GetAllCatalogEntry() api.GetCatalogEntryPackageHandler {
 		} else {
 			var versionsAsPointer []*models.CatalogEntryPackageVersion
 			for i, _ := range versions {
-				versionsAsPointer = append(versionsAsPointer, &versions[i])
+				versionsAsPointer = append(versionsAsPointer, versions[i])
 			}
 			var catalogEntryPackageWithVersions = models.CatalogEntryPackage{Versions: versionsAsPointer}
 			catalogEntryPackageWithVersions.ProviderID = params.ProviderID
@@ -46,7 +49,11 @@ func GetAllCatalogEntryVersions() api.GetCatalogEntryPackageVersionsHandler {
 			fmt.Println(err)
 			return api.NewGetCatalogEntryPackageVersionsInternalServerError().WithPayload("Get CatalogEntry generates internal error")
 		} else {
-			return api.NewGetCatalogEntryPackageVersionsOK().WithPayload(versions)
+			var entriesAsValues []models.CatalogEntryPackageVersion
+			for _, item := range versions {
+				entriesAsValues = append(entriesAsValues, *item)
+			}
+			return api.NewGetCatalogEntryPackageVersionsOK().WithPayload(entriesAsValues)
 		}
 	})
 }
