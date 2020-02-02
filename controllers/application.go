@@ -26,19 +26,27 @@ func GetAllCatalogEntries() api.GetAllCatalogEntryPackagesHandlerFunc {
 
 func GetAllCatalogEntry() api.GetCatalogEntryPackageHandler {
 	return api.GetCatalogEntryPackageHandlerFunc(func(params api.GetCatalogEntryPackageParams) middleware.Responder {
+		catalogEntryPackage, err := svc.GetCatalogEntryPackage(params.ProviderID)
+		if err != nil {
+			fmt.Println(err)
+			return api.NewGetCatalogEntryPackageInternalServerError().WithPayload("Get CatalogEntry generates internal error")
+		}
+		if catalogEntryPackage == nil {
+			return api.NewGetCatalogEntryPackageNotFound().WithPayload("Not found")
+		}
+
 		versions, err := svc.GetAllCatalogEntryPackageVersionVersions(params.ProviderID)
 		if err != nil {
 			fmt.Println(err)
 			return api.NewGetCatalogEntryPackageInternalServerError().WithPayload("Get CatalogEntry generates internal error")
-		} else {
-			var versionsAsPointer []*models.CatalogEntryPackageVersion
-			for i, _ := range versions {
-				versionsAsPointer = append(versionsAsPointer, versions[i])
-			}
-			var catalogEntryPackageWithVersions = models.CatalogEntryPackage{Versions: versionsAsPointer}
-			catalogEntryPackageWithVersions.ProviderID = params.ProviderID
-			return api.NewGetCatalogEntryPackageOK().WithPayload(catalogEntryPackageWithVersions)
 		}
+
+		var versionsAsPointer []*models.CatalogEntryPackageVersion
+		for i, _ := range versions {
+			versionsAsPointer = append(versionsAsPointer, versions[i])
+		}
+		catalogEntryPackage.Versions = versionsAsPointer
+		return api.NewGetCatalogEntryPackageOK().WithPayload(*catalogEntryPackage)
 	})
 }
 

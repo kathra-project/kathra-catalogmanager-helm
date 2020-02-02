@@ -61,6 +61,17 @@ func GetAllCatalogEntryPackage() ([]*apiModel.CatalogEntryPackage, error) {
 	return catalogEntries, nil
 }
 
+func GetCatalogEntryPackage(providerId string) (*apiModel.CatalogEntryPackage, error) {
+	var helmEntries, err = HelmSearchInMemory(providerId, false)
+	if err != nil {
+		return nil, err
+	}
+	if len(helmEntries) == 0 {
+		return nil, nil
+	}
+	return convertHelmEntryToCatalogEntryPackage(helmEntries[0]), nil
+}
+
 func GetAllCatalogEntryPackageVersionVersions(providerId string) ([]*apiModel.CatalogEntryPackageVersion, error) {
 	var helmEntries, err = HelmSearchInMemory(providerId, true)
 	catalogEntries := []*apiModel.CatalogEntryPackageVersion{}
@@ -76,6 +87,7 @@ func GetAllCatalogEntryPackageVersionVersions(providerId string) ([]*apiModel.Ca
 type ChartYaml struct {
 	Icon        string   `yaml:"icon"`
 	Home        string   `yaml:"home"`
+	Sources     []string `yaml:"sources"`
 	Description string   `yaml:"description"`
 	Keywords    []string `yaml:"keywords"`
 }
@@ -125,8 +137,13 @@ func convertHelmEntryToCatalogEntryPackage(helmEntry *HelmEntry) *apiModel.Catal
 	catalogEntry.Description = helmEntry.Description
 	if helmEntry.ChartYaml != nil {
 		catalogEntry.Icon = helmEntry.ChartYaml.Icon
-		asset.Metadata["website"] = helmEntry.ChartYaml.Home
-		asset.Metadata["keywords"] = strings.Join(helmEntry.ChartYaml.Keywords[:], ",")
+		metadata := make(map[string]interface{}, 0)
+		metadata["website"] = helmEntry.ChartYaml.Home
+		if len(helmEntry.ChartYaml.Sources) > 0 {
+			metadata["sourceUrl"] = helmEntry.ChartYaml.Sources[0]
+		}
+		metadata["keywords"] = strings.Join(helmEntry.ChartYaml.Keywords[:], ",")
+		asset.Metadata = metadata
 	}
 	versions := []*apiModel.CatalogEntryPackageVersion{}
 	versions = append(versions, &apiModel.CatalogEntryPackageVersion{Version: helmEntry.VersionChart})
@@ -141,8 +158,14 @@ func convertHelmEntryToCatalogEntryPackageVersion(helmEntry *HelmEntry) *apiMode
 	catalogEntry.Description = helmEntry.Description
 	if helmEntry.ChartYaml != nil {
 		catalogEntry.Icon = helmEntry.ChartYaml.Icon
-		asset.Metadata["website"] = helmEntry.ChartYaml.Home
-		asset.Metadata["keywords"] = strings.Join(helmEntry.ChartYaml.Keywords[:], ",")
+		metadata := make(map[string]interface{}, 0)
+		metadata["website"] = helmEntry.ChartYaml.Home
+		if len(helmEntry.ChartYaml.Sources) > 0 {
+			metadata["sourceUrl"] = helmEntry.ChartYaml.Sources[0]
+		}
+		metadata["keywords"] = strings.Join(helmEntry.ChartYaml.Keywords[:], ",")
+
+		asset.Metadata = metadata
 	}
 	var catalogEntryPackage = apiModel.CatalogEntryPackage{CatalogEntry: &catalogEntry, URL: helmEntry.RepositoryURL, ProviderID: helmEntry.LocalName, PackageType: apiModel.PACKAGETYPEHELM, Asset: asset}
 	return &apiModel.CatalogEntryPackageVersion{Version: helmEntry.VersionChart, CatalogEntryPackage: &catalogEntryPackage}
