@@ -51,7 +51,10 @@ func getTemplates() []apiModel.PackageTemplate {
 	var imageName = apiModel.PackageTemplateArgument{Key: "IMAGE_NAME", Value: ".+"}
 	var imageTag = apiModel.PackageTemplateArgument{Key: "IMAGE_TAG", Value: ".+"}
 	var registryHost = apiModel.PackageTemplateArgument{Key: "REGISTRY_HOST", Value: ".+"}
-	var arguments = []*apiModel.PackageTemplateArgument{&chartName, &chartVersion, &chartDescription, &appVersion, &imageName, &imageTag, &registryHost}
+	var source = apiModel.PackageTemplateArgument{Key: "SOURCE_URL", Value: ".+"}
+	var website = apiModel.PackageTemplateArgument{Key: "HOME_URL", Value: ".+"}
+	var icon = apiModel.PackageTemplateArgument{Key: "ICON_URL", Value: ".+"}
+	var arguments = []*apiModel.PackageTemplateArgument{&chartName, &chartVersion, &chartDescription, &appVersion, &imageName, &imageTag, &registryHost, &source, &icon, &website}
 	var restServiceTemplate = apiModel.PackageTemplate{Name: "RestApiService", Arguments: arguments}
 	return []apiModel.PackageTemplate{restServiceTemplate}
 }
