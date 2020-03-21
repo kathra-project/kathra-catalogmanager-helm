@@ -3,11 +3,15 @@ WORKDIR /app
 COPY go.mod ./
 RUN go mod download
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main cmd/kathra-catalogmanager-helm-server/main.go
 
-FROM alpine/helm:2.15.2 
+FROM alpine/helm:3.0.0
 RUN apk --no-cache add ca-certificates bash sed grep gawk
 WORKDIR /root/
+COPY repositories.yaml repositories.yaml
 COPY --from=builder /app/main .
+ENV PORT=8080
+ENV HOST=0.0.0.0
 EXPOSE 8080
-CMD ["./main"] 
+ENTRYPOINT [ "/bin/sh" ]
+CMD ["-c", "./main"] 
