@@ -1,27 +1,29 @@
-package kathracatalogmanagerhelmservices
+package services
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
-	"net/http"
 	"os"
 	"os/exec"
 	"path"
 	"regexp"
 	"sort"
+
+	apiModel "github.com/kathra-project/kathra-core-model-go/models"
 )
 
 type TemplateService interface {
-	getTemplates() []Template
-	templateIsValid() (bool, error)
-	generateFilesFromTemplate(t Template) (string, error)
+	getTemplates() []apiModel.PackageTemplate
+	templateIsValid(t apiModel.PackageTemplate) (bool, error)
+	generateFilesFromTemplate(t apiModel.PackageTemplate) (string, error)
+	getValueFromKey(t apiModel.PackageTemplate, key string) string
+	GetConstraintFromKey(t apiModel.PackageTemplate, key string) string
 }
 
-func (t Template) getValueFromKey(key string) string {
+func getValueFromKey(t apiModel.PackageTemplate, key string) string {
 	sort.Slice(t.Arguments, func(i, j int) bool {
 		return t.Arguments[i].Key <= t.Arguments[j].Key
 	})
@@ -30,7 +32,7 @@ func (t Template) getValueFromKey(key string) string {
 	})
 	return t.Arguments[iKey].Value
 }
-func (t Template) getConstraintFromKey(key string) string {
+func GetConstraintFromKey(t apiModel.PackageTemplate, key string) string {
 	sort.Slice(t.Arguments, func(i, j int) bool {
 		return t.Arguments[i].Key <= t.Arguments[j].Key
 	})
@@ -41,30 +43,23 @@ func (t Template) getConstraintFromKey(key string) string {
 }
 
 // Return collection of @Template
-func getTemplates() []Template {
-	var chartName = TemplateArgument{Key: "CHART_NAME", Value: "", Contrainst: "[A-Za-z0-9]"}
-	var chartVersion = TemplateArgument{Key: "CHART_VERSION", Value: "", Contrainst: "[0-9]+\\.[0-9]+\\.[0-9]+"}
-	var chartDescription = TemplateArgument{Key: "CHART_DESCRIPTION", Value: "", Contrainst: "[A-Za-z0-9]"}
-	var appVersion = TemplateArgument{Key: "APP_VERSION", Value: "", Contrainst: "[0-9]+\\.[0-9]+\\.[0-9]+"}
-	var imageName = TemplateArgument{Key: "IMAGE_NAME", Value: ".+"}
-	var imageTag = TemplateArgument{Key: "IMAGE_TAG", Value: ".+"}
-	var registryHost = TemplateArgument{Key: "REGISTRY_HOST", Value: ".+"}
-	var restServiceTemplate = Template{Name: "RestApiService", Arguments: []TemplateArgument{chartName, chartVersion, chartDescription, appVersion, imageName, imageTag, registryHost}}
-	return []Template{restServiceTemplate}
+func getTemplates() []apiModel.PackageTemplate {
+	var chartName = apiModel.PackageTemplateArgument{Key: "CHART_NAME", Value: "", Contrainst: "[A-Za-z0-9]"}
+	var chartVersion = apiModel.PackageTemplateArgument{Key: "CHART_VERSION", Value: "", Contrainst: "[0-9]+\\.[0-9]+\\.[0-9]+"}
+	var chartDescription = apiModel.PackageTemplateArgument{Key: "CHART_DESCRIPTION", Value: "", Contrainst: "[A-Za-z0-9]"}
+	var appVersion = apiModel.PackageTemplateArgument{Key: "APP_VERSION", Value: "", Contrainst: "[0-9]+\\.[0-9]+\\.[0-9]+"}
+	var imageName = apiModel.PackageTemplateArgument{Key: "IMAGE_NAME", Value: ".+"}
+	var imageTag = apiModel.PackageTemplateArgument{Key: "IMAGE_TAG", Value: ".+"}
+	var registryHost = apiModel.PackageTemplateArgument{Key: "REGISTRY_HOST", Value: ".+"}
+	var source = apiModel.PackageTemplateArgument{Key: "SOURCE_URL", Value: ".+"}
+	var website = apiModel.PackageTemplateArgument{Key: "HOME_URL", Value: ".+"}
+	var icon = apiModel.PackageTemplateArgument{Key: "ICON_URL", Value: ".+"}
+	var arguments = []*apiModel.PackageTemplateArgument{&chartName, &chartVersion, &chartDescription, &appVersion, &imageName, &imageTag, &registryHost, &source, &icon, &website}
+	var restServiceTemplate = apiModel.PackageTemplate{Name: "RestApiService", Arguments: arguments}
+	return []apiModel.PackageTemplate{restServiceTemplate}
 }
 
-func GetTemplatesImpl(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	b, err := json.Marshal(getTemplates())
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, string(b))
-}
-
-func (templateToCheck Template) templateIsValid() error {
+func templateIsValid(templateToCheck apiModel.PackageTemplate) error {
 	var templates = getTemplates()
 	for _, template := range templates {
 		// find template
@@ -74,7 +69,7 @@ func (templateToCheck Template) templateIsValid() error {
 					continue
 				}
 				regexContrainst, _ := regexp.Compile(arg.Contrainst)
-				var valueSetted string = templateToCheck.getValueFromKey(arg.Key)
+				var valueSetted string = getValueFromKey(templateToCheck, arg.Key)
 				if !regexContrainst.MatchString(valueSetted) {
 					return errors.New("Template '" + template.Name + "' is not valid: argument '" + arg.Key + "' doesn't respect contrainst '" + arg.Contrainst + "'. Value defined : " + valueSetted)
 				}
@@ -85,13 +80,13 @@ func (templateToCheck Template) templateIsValid() error {
 	return errors.New("Template '" + templateToCheck.Name + "' not found ")
 }
 
-func generateFilesFromTemplate(t Template) (string, error) {
+func generateFilesFromTemplate(t apiModel.PackageTemplate) (string, error) {
 	dir, err := ioutil.TempDir(os.TempDir(), "kathra-catalogmanager-")
 	if err != nil {
 		log.Println(err)
 		return "", err
 	}
-	var dirWithSrc = dir + "/" + t.getValueFromKey("CHART_NAME")
+	var dirWithSrc = dir + "/" + getValueFromKey(t, "CHART_NAME")
 	Dir("./templates/"+t.Name, dirWithSrc)
 	for _, arg := range t.Arguments {
 		cmd := exec.Command("/bin/bash", "-c", "find "+dirWithSrc+" -type f -exec sed -i -e 's/${"+arg.Key+"}/"+arg.Value+"/g' {} \\;")
