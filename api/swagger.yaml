@@ -1,10 +1,7 @@
 swagger: "2.0"
 info:
-  description: "KATHRA Catalog Management API permetting : \n * Generate source's
-    packages from templates \n * Insert catalog entry from template  \n \n * Insert
-    catalog entry from file  \n\n * Insert catalog entry from source repository  \n
-    * Read catalog entries from catalog \n "
-  version: 1.1.0-SNAPSHOT
+  description: "KATHRA Catalog Management API permetting : \n * Generate source's packages from templates \n * Insert catalog entry from template  \n \n * Insert catalog entry from file  \n\n * Insert catalog entry from source repository  \n * Read catalog entries from catalog \n "
+  version: 1.2.0
   title: Kathra Catalog Manager
   x-artifactName: catalogManager
   x-groupId: org.kathra
@@ -13,11 +10,11 @@ paths:
   /templates:
     get:
       tags:
-      - Templating
+        - Templating
       summary: Get all templates for catalog generation
       operationId: getTemplates
       produces:
-      - application/json
+        - application/json
       parameters: []
       responses:
         200:
@@ -29,19 +26,19 @@ paths:
   /generateFromTemplate:
     post:
       tags:
-      - Templating
+        - Templating
       summary: Generate archive from template
       operationId: generateFromTemplate
       produces:
-      - application/json
+        - application/json
       parameters:
-      - in: body
-        name: Template
-        description: CatalogEntry to create from Template
-        required: true
-        schema:
-          $ref: '#/definitions/Template'
-        x-exportParamName: Template
+        - in: body
+          name: Template
+          description: CatalogEntry to create from Template
+          required: true
+          schema:
+            $ref: '#/definitions/Template'
+          x-exportParamName: Template
       responses:
         200:
           description: CatalogEntry wtih providerId
@@ -50,11 +47,11 @@ paths:
   /catalogEntries:
     get:
       tags:
-      - Read catalog entries
+        - Read catalog entries
       summary: Get all entries in the catalog
       operationId: getAllCatalogServices
       produces:
-      - application/json
+        - application/json
       parameters: []
       responses:
         200:
@@ -66,18 +63,18 @@ paths:
   /catalogEntries/{providerId}:
     get:
       tags:
-      - Read catalog entries
+        - Read catalog entries
       summary: Get an entry in the catalog
       operationId: getCatalogEntry
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: providerId
-        in: path
-        description: CatalogEntry providerId
-        required: true
-        type: string
-        x-exportParamName: ProviderId
+        - name: providerId
+          in: path
+          description: CatalogEntry providerId
+          required: true
+          type: string
+          x-exportParamName: ProviderId
       responses:
         200:
           description: CatalogEntry with details
@@ -86,24 +83,24 @@ paths:
   /catalogEntries/{providerId}/versions/{version}:
     get:
       tags:
-      - Read catalog entries
+        - Read catalog entries
       summary: Get an entry in the catalog for specific version
       operationId: getCatalogEntryFromVersion
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: providerId
-        in: path
-        description: CatalogEntry providerId
-        required: true
-        type: string
-        x-exportParamName: ProviderId
-      - name: version
-        in: path
-        description: CatalogEntry version
-        required: true
-        type: string
-        x-exportParamName: Version
+        - name: providerId
+          in: path
+          description: CatalogEntry providerId
+          required: true
+          type: string
+          x-exportParamName: ProviderId
+        - name: version
+          in: path
+          description: CatalogEntry version
+          required: true
+          type: string
+          x-exportParamName: Version
       responses:
         200:
           description: CatalogEntry with details
@@ -112,18 +109,18 @@ paths:
   /catalogEntries/{providerId}/versions:
     get:
       tags:
-      - Read catalog entries
+        - Read catalog entries
       summary: Get all version for an entry in the catalog
       operationId: getCatalogEntryVersions
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: providerId
-        in: path
-        description: CatalogEntry providerId
-        required: true
-        type: string
-        x-exportParamName: ProviderId
+        - name: providerId
+          in: path
+          description: CatalogEntry providerId
+          required: true
+          type: string
+          x-exportParamName: ProviderId
       responses:
         200:
           description: All versions for CatalogEntry
@@ -132,19 +129,19 @@ paths:
   /catalogEntries/template:
     post:
       tags:
-      - Add catalog entry
+        - Add catalog entry
       summary: Create catalog entry from template
       operationId: addCatalogEntryFromTemplate
       produces:
-      - application/json
+        - application/json
       parameters:
-      - in: body
-        name: Template
-        description: CatalogEntry to create from Template
-        required: true
-        schema:
-          $ref: '#/definitions/Template'
-        x-exportParamName: Template
+        - in: body
+          name: Template
+          description: CatalogEntry to create from Template
+          required: true
+          schema:
+            $ref: '#/definitions/Template'
+          x-exportParamName: Template
       responses:
         200:
           description: Output type
@@ -153,32 +150,32 @@ paths:
   /catalogEntries/archive:
     post:
       tags:
-      - Add catalog entry
+        - Add catalog entry
       summary: Create catalog entry from archive file
       operationId: addCatalogEntryFromArchive
       consumes:
-      - multipart/form-data
+        - multipart/form-data
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: file
-        in: formData
-        description: The uploaded file data
-        required: true
-        type: file
-        x-exportParamName: File
-      - name: name
-        in: path
-        description: CatalogEntry's name
-        required: true
-        type: string
-        x-exportParamName: Name
-      - name: version
-        in: path
-        description: CatalogEntry's version
-        required: true
-        type: string
-        x-exportParamName: Version
+        - name: file
+          in: formData
+          description: The uploaded file data
+          required: true
+          type: file
+          x-exportParamName: File
+        - name: name
+          in: path
+          description: CatalogEntry's name
+          required: true
+          type: string
+          x-exportParamName: Name
+        - name: version
+          in: path
+          description: CatalogEntry's version
+          required: true
+          type: string
+          x-exportParamName: Version
       responses:
         200:
           description: Output type
@@ -187,36 +184,36 @@ paths:
   /catalogEntries/sourceRepository:
     post:
       tags:
-      - Add catalog entry
+        - Add catalog entry
       summary: Create catalog entry from source repository's url
       operationId: addCatalogEntryFromSourceRepositoryUrl
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: SourceRepositoryUrl
-        in: query
-        description: CatalogEntry to insert from source repository's URL
-        required: true
-        type: string
-        x-exportParamName: SourceRepositoryUrl
-      - name: branch
-        in: path
-        description: Source repository's branch/tag/commit
-        required: true
-        type: string
-        x-exportParamName: Branch
-      - name: name
-        in: path
-        description: CatalogEntry's name
-        required: true
-        type: string
-        x-exportParamName: Name
-      - name: version
-        in: path
-        description: CatalogEntry's version
-        required: true
-        type: string
-        x-exportParamName: Version
+        - name: SourceRepositoryUrl
+          in: query
+          description: CatalogEntry to insert from source repository's URL
+          required: true
+          type: string
+          x-exportParamName: SourceRepositoryUrl
+        - name: branch
+          in: path
+          description: Source repository's branch/tag/commit
+          required: true
+          type: string
+          x-exportParamName: Branch
+        - name: name
+          in: path
+          description: CatalogEntry's name
+          required: true
+          type: string
+          x-exportParamName: Name
+        - name: version
+          in: path
+          description: CatalogEntry's version
+          required: true
+          type: string
+          x-exportParamName: Version
       responses:
         200:
           description: Output type
@@ -235,22 +232,22 @@ definitions:
         items:
           $ref: '#/definitions/TemplateArgument'
     example:
-    - name: RestApiService
-      arguments:
-      - key: CHART_NAME
-        contrainst: '[A-Za-z0-9]'
-      - key: CHART_VERSION
-        contrainst: '[0-9]+\.[0-9]+\.[0-9]+'
-      - key: CHART_DESCRIPTION
-        contrainst: '[A-Za-z0-9]'
-      - key: APP_VERSION
-        contrainst: '[0-9]+\.[0-9]+\.[0-9]+'
-      - key: IMAGE_NAME
-        value: .+
-      - key: IMAGE_TAG
-        value: .+
-      - key: REGISTRY_HOST
-        value: .+
+      - name: RestApiService
+        arguments:
+          - key: CHART_NAME
+            contrainst: '[A-Za-z0-9]'
+          - key: CHART_VERSION
+            contrainst: '[0-9]+\.[0-9]+\.[0-9]+'
+          - key: CHART_DESCRIPTION
+            contrainst: '[A-Za-z0-9]'
+          - key: APP_VERSION
+            contrainst: '[0-9]+\.[0-9]+\.[0-9]+'
+          - key: IMAGE_NAME
+            value: .+
+          - key: IMAGE_TAG
+            value: .+
+          - key: REGISTRY_HOST
+            value: .+
   TemplateArgument:
     type: object
     properties:
