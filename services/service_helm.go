@@ -57,7 +57,7 @@ func (svc *HelmService) UpdateFromResourceManager() {
 
 	var repositoriesFromResourceManager, errResourceManager = getHelmRepositoryFromResourceManager()
 	if errResourceManager != nil {
-		log.Panic("Err: Get all repository from resourcemanager")
+		log.Panic("Err: Get all binary repositories from resourcemanager")
 	}
 	for i := range repositoriesFromResourceManager {
 		var existing = false
