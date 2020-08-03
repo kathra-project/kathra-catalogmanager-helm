@@ -22,4 +22,5 @@ require (
 	gitlab.com/kathra/kathra/kathra-services/kathra-runtimemanager/kathra-runtimemanager-go/kathra-runtimemanager-k8s v0.0.0-20191127170228-a50a8e8548de
 	golang.org/x/net v0.0.0-20191209160850-c0dbc17a3553
 	gopkg.in/yaml.v2 v2.2.4
+
 )
